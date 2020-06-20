@@ -1,0 +1,87 @@
+@page "/person"
+<h1>Manage People</h1>
+
+@if (peopleData == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>Name</th>
+                <th>DOB</th>
+                <th>Home Phone</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var g in peopleData)
+            {
+                <tr @onclick="@(e => ShowPop(e, g))">
+                    <td>@g.id</td>
+                    <td>@g.name</td>
+                    <td>@g.dateOfBirth.ToShortDateString()</td>
+                    <td>@g.homePhone</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4">
+                    <Pagination TotalRecords="@TotalRows" PageSize="@pageSize" OnClick="PagingHandler"></Pagination>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+
+
+        <BlazorModal Title="Update Person" IsOpened="isOpened">
+            <ModalBody>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-4">
+                            <label class="label2">Name</label>
+                        </div>
+                        <div class="col-xs-6 col-lg-8">
+                            <input class="form-control" type="text" name="Name" id="Name" @bind="selectedPerson.name" />
+                        </div>
+                        <input type="hidden" id="id" name="id" />
+                        <input type="hidden" id="Address_ID" name="Address_ID" />
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-4">
+                            <label class="label2">Home_Phone</label>
+                        </div>
+                        <div class="col-xs-6 col-lg-8">
+                            <input class="form-control" type="text" name="Home_Phone" id="Home_Phone" @bind="selectedPerson.homePhone" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-4">
+                            <label class="label2">Email Adress</label>
+                        </div>
+                        <div class="col-xs-6 col-lg-8">
+                            <input class="form-control" type="text" name="E_Mail" @bind="selectedPerson.eMail" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-4">
+                            <label class="label2">Date of Birth</label>
+                        </div>
+                        <div class="col-xs-6 col-lg-8">
+                            <input class="form-control" type="date" @bind="selectedPerson.dateOfBirth" />
+                        </div>
+                    </div>
+
+                </div>
+
+            </ModalBody>
+            <ModalFooter>
+                <button class="btn btn-primary" @onclick="CloseModal">Close</button>
+                <button class="btn btn-primary" @onclick="SaveModal">Save</button>
+            </ModalFooter>
+        </BlazorModal>
+}

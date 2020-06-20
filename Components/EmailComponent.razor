@@ -1,0 +1,69 @@
+@page "/email"
+@inject HttpClient Http
+@inject IJSRuntime jsRuntime;
+@using SSSCalBlazor.Client.Models
+
+<center id="cDir"><h2>Email</h2></center>
+<div class="container" style="border: 3px solid blue;">
+    <div class="row justify-content-md-center">
+        <select @bind="@selectedEventID" style="font-family: monospace, monospace;">
+            @foreach (var cnt in eventData)
+            {
+                <option value="@cnt.id">@cnt.displayDescription</option>
+            }
+        </select>
+    </div>
+    <div class="row">
+        &nbsp;
+    </div>
+    <div class="row justify-content-md-center">
+        <div class="col col-md-auto">People</div>
+        <div class="col col-md-2"></div>
+        <div class="col col-md-auto">Selected People</div>
+    </div>
+    <div class="row justify-content-md-center">
+        <div class="col col-md-auto">
+            <select ref="selectElRef" multiple size="15">
+                @foreach (var cnt in UnSelectedEmailList)
+                {
+                    <option value="@cnt.id">@cnt.id</option>
+                }
+            </select>
+        </div>
+
+
+
+    </div>
+</div>
+
+<button class="btn btn-primary" @onclick="OnTestClick">TestClick</button>
+
+@code {
+
+    public string selectedCountryID { get; set; }
+    private List<PeopleModel> UnSelectedEmailList = new List<PeopleModel>();
+    private List<EventModel> eventData = new List<EventModel>();
+    public int selectedEventID { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        eventData = await Http.GetFromJsonAsync<List<EventModel>>($"http://www.schuebelsoftware.com/SSSCalCoreApi/api/event");
+    }
+
+
+    private void ShowPop(MouseEventArgs e, PeopleModel p)
+    {
+        //        ((IJSInProcessRuntime)jsRuntime).InvokeVoid("ShowAlert", "selected val" + selectedCountryID);
+
+    }
+
+    private async Task OnTestClick()
+    {
+        await jsRuntime.InvokeVoidAsync("alert", "selected val" + selectedCountryID);
+
+        //        ((IJSInProcessRuntime)jsRuntime).InvokeVoid("ShowAlert", "selected val" + selectedCountryID);
+
+    }
+
+
+}
