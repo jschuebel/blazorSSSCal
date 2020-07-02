@@ -9,7 +9,7 @@
         <select @bind="@selectedEventID" style="font-family: monospace, monospace;">
             @foreach (var cnt in eventData)
             {
-                <option value="@cnt.id">@cnt.displayDescription</option>
+                <option value="@cnt.id">@((MarkupString)cnt.displayDescription)</option>
             }
         </select>
     </div>
@@ -47,7 +47,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        eventData = await Http.GetFromJsonAsync<List<EventModel>>($"http://www.schuebelsoftware.com/SSSCalCoreApi/api/event");
+        DateTime startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month-1, 1);
+        Console.WriteLine($"startDate = {startDate} ");
+        DateTime endDate = new DateTime(DateTime.Now.Year, 12, 31);
+
+        eventData = await Http.GetFromJsonAsync<List<EventModel>>($"http://www.schuebelsoftware.com/SSSCalCoreApi/api/event/calendarsearch?startDate={startDate.ToShortDateString()}&endDate={endDate.ToShortDateString()}");
     }
 
 

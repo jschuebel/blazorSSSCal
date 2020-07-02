@@ -28,9 +28,29 @@ namespace SSSCalBlazor.Client.Models
         {
             get
             {
-                var displayResult = (this.description == null || (this.description != null && this.description.Length < 26)) ? this.description : this.description.Substring(0, 25);
-                displayResult += this.date == null ? "no date" : this.date.Value.ToString();
-                return displayResult;
+                var len = 0;
+                var newstring = "";
+                if (description == null || (description != null && description.Trim().Length == 0))
+                {
+                    newstring = this.topic == null ? "N/A" : userName + " " + this.topic.Trim();
+                    len = newstring.Length;
+                }
+                else
+                {
+                    if (description.Trim().Length > 25)
+                        newstring = description.Substring(0, 25).Trim();
+                    else
+                        newstring = description.Trim();
+                    len = newstring.Length;
+                }
+                len = (len > 25) ? 25 : len;
+                var padd = new string[27 - len];
+                var padds = string.Join("&nbsp;", padd);
+
+                if (id != -1)
+                    return newstring + padds + (date == null ? "N/A" : date.Value.ToString("MM-dd-yyyy"));
+
+                return newstring;
             }
         }
         public string userName { get; set; }
