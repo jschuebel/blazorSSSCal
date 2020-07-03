@@ -12,6 +12,18 @@ window.getFolderWidth = function (tFolder) {
     return tFolder.offsetWidth;
 }
 
+
+window.getSelectOptions = function (selectRef) {
+    var results = [];
+    for (var i = 0; i < selectRef.options.length; i++) {
+        if (selectRef.options[i].selected) {
+            results.push(parseInt(selectRef.options[i].value));
+        }
+    }
+    console.log('getFolderWidth', results);
+    return results;
+}
+
 window.playmovie = function (element, path) {
     var vpID = document.getElementById("vpID");
 

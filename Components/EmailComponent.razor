@@ -1,12 +1,18 @@
 @page "/email"
 @inject HttpClient Http
 @inject IJSRuntime jsRuntime;
+@using Microsoft.AspNetCore.Components
+@using Microsoft.JSInterop
+
+
 @using SSSCalBlazor.Client.Models
 
 <center id="cDir"><h2>Email</h2></center>
 <div class="container" style="border: 3px solid blue;">
     <div class="row justify-content-md-center">
-        <select @bind="@selectedEventID" style="font-family: monospace, monospace;">
+        <div id="val-set-by-interop" @ref="divElement"></div>
+
+        <select @onchange="onChange" style="font-family: monospace, monospace;">
             @foreach (var cnt in eventData)
             {
                 <option value="@cnt.id">@((MarkupString)cnt.displayDescription)</option>
@@ -23,10 +29,38 @@
     </div>
     <div class="row justify-content-md-center">
         <div class="col col-md-auto">
-            <select ref="selectElRef" multiple size="15">
+            <select @ref="selectElRef" multiple size="15">
                 @foreach (var cnt in UnSelectedEmailList)
                 {
-                    <option value="@cnt.id">@cnt.id</option>
+                    <option value="@cnt.id">@cnt.name</option>
+                }
+            </select>
+        </div>
+        <div class="col col-md-2">
+            <div class="row justify-content-md-center">
+                <button @onclick="Move2SELPople" disabled="@(isLoggedIn==false)" class="btn btn-primary btn-sm">&#10095;&#10095;</button>
+            </div>
+            <div class="row justify-content-md-center">
+                &nbsp;
+            </div>
+            <div class="row justify-content-md-center">
+                <button @onclick="Move2Pople" disabled="@(isLoggedIn==false)" class="btn btn-primary btn-sm">&#10094;&#10094;</button>
+            </div>
+            <div class="row justify-content-md-center">
+                &nbsp;
+            </div>
+            <div class="row justify-content-md-center">
+                @if (isLoggedIn)
+                {
+                    <button disabled="@(SelectedEmailIDList.Count == 0)" @onclick="Save" class="btn btn-primary btn-sm">Save</button>
+                }
+            </div>
+        </div>
+        <div class="col col-md-auto">
+            <select @ref="selectSELElRef" multiple size="15">
+                @foreach (var cnt in SelectedEmailList)
+                {
+                    <option value="@cnt.id">@cnt.name</option>
                 }
             </select>
         </div>
@@ -41,17 +75,35 @@
 @code {
 
     public string selectedCountryID { get; set; }
+
+    private List<PeopleModel> PeopleList = new List<PeopleModel>();
     private List<PeopleModel> UnSelectedEmailList = new List<PeopleModel>();
+    private List<PeopleModel> SelectedEmailList = new List<PeopleModel>();
     private List<EventModel> eventData = new List<EventModel>();
+    private List<int> SelectedEmailIDList = new List<int>();
     public int selectedEventID { get; set; }
+    private bool isLoggedIn = false;
+
+    private ElementReference selectElRef;
+    private ElementReference selectSELElRef;
+    private ElementReference divElement;
+
 
     protected override async Task OnInitializedAsync()
     {
-        DateTime startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month-1, 1);
-        Console.WriteLine($"startDate = {startDate} ");
+
+        DateTime startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month - 1, 1);
+        //Console.WriteLine($"startDate = {startDate} ");
         DateTime endDate = new DateTime(DateTime.Now.Year, 12, 31);
 
         eventData = await Http.GetFromJsonAsync<List<EventModel>>($"http://www.schuebelsoftware.com/SSSCalCoreApi/api/event/calendarsearch?startDate={startDate.ToShortDateString()}&endDate={endDate.ToShortDateString()}");
+        eventData.Insert(0, new EventModel() { id = -1, description = "@fmt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&nbsp;Make Selection&nbsp;&lt;&lt;" }) ;
+
+        var filterParams = $"page=1&pageSize={int.MaxValue}&sort[0][field]=name&sort[0][dir]=asc";
+        PeopleList = await Http.GetFromJsonAsync<List<PeopleModel>>($"http://www.schuebelsoftware.com/SSSCalCoreApi/api/person?{filterParams}");
+
+
+
     }
 
 
@@ -67,6 +119,82 @@
 
         //        ((IJSInProcessRuntime)jsRuntime).InvokeVoid("ShowAlert", "selected val" + selectedCountryID);
 
+    }
+
+    private async Task onChange(ChangeEventArgs e)
+    {
+        this.SelectedEmailIDList.Clear();
+        Console.WriteLine("onChange selectedEventID=" + e.Value.ToString());
+        selectedEventID = int.Parse(e.Value.ToString());
+        var SelectedGroupList = await Http.GetFromJsonAsync<List<GroupModel>>($"http://www.schuebelsoftware.com/SSSCalCoreApi/api/group/{selectedEventID}");
+        SelectedGroupList.ForEach(delegate (GroupModel g)
+        {
+            //Console.WriteLine($"peoplelist person name={g.personId}");
+            this.SelectedEmailIDList.Add(g.personId);
+        });
+
+        this.UpdateLists();
+    }
+
+    private async Task Move2SELPople()
+    {
+        Console.WriteLine("Move2SELPople");
+
+        SelectedEmailIDList = await jsRuntime.InvokeAsync<List<int>>("getSelectOptions", selectElRef);
+        Console.WriteLine($"SelectedEmailIDList count = {SelectedEmailIDList.Count} ");
+
+        await this.UpdateLists();
+    }
+
+    private async Task Move2Pople()
+    {
+        Console.WriteLine("Move2Pople");
+
+        var tmpSelectedEmailIDList = await jsRuntime.InvokeAsync<List<int>>("getSelectOptions", selectSELElRef);
+        Console.WriteLine($"SelectedEmailIDList count = {tmpSelectedEmailIDList.Count} ");
+
+        tmpSelectedEmailIDList.ForEach(delegate (int selId)
+        {
+            //Console.WriteLine($"peoplelist person name={p.name}");
+
+            if (this.SelectedEmailIDList.Contains(selId))
+                this.SelectedEmailIDList.Remove(selId);
+        });
+        Console.WriteLine($"SelectedEmailIDList count = {tmpSelectedEmailIDList.Count} ");
+        this.UpdateLists();
+    }
+
+    private Task Save()
+    {
+        Console.WriteLine("Save");
+        return Task.CompletedTask;
+    }
+
+    private async Task UpdateLists()
+    {
+
+
+        Console.WriteLine($"selectedEventID={selectedEventID}");
+        Console.WriteLine($"UpdateLists this.SelectedEmailIDList={this.SelectedEmailIDList.Count}");
+
+        this.UnSelectedEmailList.Clear();
+        this.SelectedEmailList.Clear();
+        if (this.SelectedEmailIDList == null || (this.SelectedEmailIDList != null && this.SelectedEmailIDList.Count == 0))
+        {
+            this.UnSelectedEmailList = this.PeopleList.ToList();
+        }
+        else
+        {
+            //let currList = this.SelectedEmailIDList;
+            this.PeopleList.ForEach(delegate(PeopleModel p){
+                //Console.WriteLine($"peoplelist person name={p.name}");
+
+                if (this.SelectedEmailIDList.Contains(p.id))
+                    this.SelectedEmailList.Add(p);
+                else
+                    this.UnSelectedEmailList.Add(p);
+            });
+        }
     }
 
 

@@ -37,6 +37,10 @@ namespace SSSCalBlazor.Client.Models
                 }
                 else
                 {
+                    if (this.description.Contains("@fmt"))
+                    {
+                        return this.description.Substring(4);
+                    }
                     if (description.Trim().Length > 25)
                         newstring = description.Substring(0, 25).Trim();
                     else
@@ -49,8 +53,9 @@ namespace SSSCalBlazor.Client.Models
 
                 if (id != -1)
                     return newstring + padds + (date == null ? "N/A" : date.Value.ToString("MM-dd-yyyy"));
+                else
+                    return newstring;
 
-                return newstring;
             }
         }
         public string userName { get; set; }
