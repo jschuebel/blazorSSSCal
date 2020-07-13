@@ -163,7 +163,10 @@
             calDays.Add(dayptr);
 
             // activeli = dayCounter == currDate.Day+1 && hadReset==false ? "class='daylbl active'" : "class='daylbl'";
-            var evtlst = eventData.Where(x => x.date.Value.Month == dt.Month && x.date.Value.Day == dt.Day).ToList();
+            var evtlst = eventData.Where(x =>
+                (x.topicId==1 && x.date.Value.Month == dt.Month && x.date.Value.Day == dt.Day) ||
+                (x.topicId == 0 && x.date.Value.Month == dt.Month && x.date.Value.Day == dt.Day && x.date.Value.Year == dt.Year)
+                ).ToList();
             if (evtlst != null && evtlst.Count > 0)
             {
                 foreach (var ev in evtlst)

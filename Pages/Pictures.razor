@@ -1,6 +1,7 @@
 @page "/pictures"
 @inject HttpClient Http
 @inject IJSRuntime JSRuntime;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 
 @using System.IO;
@@ -182,20 +183,26 @@
                 int wd = await JSRuntime.InvokeAsync<int>("getFolderWidth", tFolder);
                 //Console.WriteLine($"wd={wd}");
 
-                MaxCols = (int) wd / 195;
+                MaxCols = (int)wd / 195;
                 // Console.WriteLine($"MaxCols={MaxCols}");
 
-                pictures = await Http.GetFromJsonAsync<PictureNode>("inetpub.json");
-                if (pictures is null)
-                    Console.WriteLine("NOOO pictures.Family");
-                else
+                pictures = await localStorage.GetItemAsync<PictureNode>("SSSPics");
+                if (pictures == null)
                 {
-                    messages = "";
-                    hlddir.Push(pictures);
-                    BackButtonText = $"{pictures.Name}";
-                    await UpdateTable(pictures);
-                    StateHasChanged();
+                    Console.WriteLine("SSSPics loaded from disk");
+                    pictures = await Http.GetFromJsonAsync<PictureNode>("inetpub.json");
+                    if (pictures is null)
+                        Console.WriteLine("NOOO pictures.Family");
+
+                    await localStorage.SetItemAsync("SSSPics", JsonConvert.SerializeObject(pictures));
+                    //                string json = JsonConvert.SerializeObject(registerModel, Formatting.Indented);
+
                 }
+                messages = "";
+                hlddir.Push(pictures);
+                BackButtonText = $"{pictures.Name}";
+                await UpdateTable(pictures);
+                StateHasChanged();
 
             }
             catch (Exception ex)
@@ -268,7 +275,7 @@
         //Console.WriteLine($"FullPic path({Path})");
 
         JSRuntime.InvokeVoidAsync("stopmovie", videoplayer, null);
-         await JSRuntime.InvokeVoidAsync("openpic", null, Path);
+        await JSRuntime.InvokeVoidAsync("openpic", null, Path);
 
     }
 

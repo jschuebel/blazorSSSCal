@@ -41,7 +41,7 @@ namespace SSSCalBlazor.Client.Components
             var filterParams = $"page={currentPage}&pageSize={pageSize}&sort[0][field]={sortKey}&sort[0][dir]={sortDirection}";
 //            peopleData = await client.GetFromJsonAsync<List<PeopleModel>>($"http://www.schuebelsoftware.com/SSSCalCoreApi/api/person?{filterParams}");
             var httpResponse = await client.GetAsync($"http://www.schuebelsoftware.com/SSSCalCoreApi/api/person?{filterParams}", HttpCompletionOption.ResponseHeadersRead);
-
+            //client.DefaultRequestHeaders.Authorization=new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", savedToken);
             httpResponse.EnsureSuccessStatusCode(); // throws if not 200-299
 
             if (httpResponse.Content is object && httpResponse.Content.Headers.ContentType.MediaType == "application/json")
