@@ -40,7 +40,7 @@ namespace SSSCalBlazor.Client.Components
         protected async Task Search() {
             var filterParams = $"page={currentPage}&pageSize={pageSize}&sort[0][field]={sortKey}&sort[0][dir]={sortDirection}";
 //            peopleData = await client.GetFromJsonAsync<List<PeopleModel>>($"http://www.schuebelsoftware.com/SSSCalCoreApi/api/person?{filterParams}");
-            var httpResponse = await client.GetAsync($"http://www.schuebelsoftware.com/SSSCalCoreApi/api/person?{filterParams}", HttpCompletionOption.ResponseHeadersRead);
+            var httpResponse = await client.GetAsync($"http://api.schuebelsoftware.com/api/person?{filterParams}", HttpCompletionOption.ResponseHeadersRead);
             //client.DefaultRequestHeaders.Authorization=new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", savedToken);
             httpResponse.EnsureSuccessStatusCode(); // throws if not 200-299
 

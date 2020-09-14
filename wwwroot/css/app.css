@@ -13,11 +13,11 @@ a, .btn-link {
     background-color: #1b6ec2;
     border-color: #1861ac;
 }
-
+/*
 .table tbody tr:hover td {
     background-color: yellow;
 }
-
+*/
 .table th {
     background-color: #42b983;
     color: rgba(255, 255, 255, 0.66);
@@ -162,9 +162,22 @@ app {
     .main .top-row a, .main .top-row .btn-link {
         margin-left: 0;
     }
+
+    .smallSCR {
+        display: none;
+    }
+}
+
+
+@media only screen and (max-width: 992px) {
+    .medSCR {
+        display: none;
+    }
 }
 
 @media (min-width: 768px) {
+
+
     app {
         flex-direction: row;
     }

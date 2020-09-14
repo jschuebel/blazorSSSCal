@@ -36,7 +36,7 @@ namespace SSSCalBlazor.Client.Components
         {
             //eventData = await client.GetFromJsonAsync<List<EventModel>>($"http://www.schuebelsoftware.com/SSSCalCoreApi/api/event");
             var filterParams = $"page={currentPage}&pageSize={pageSize}&sort[0][field]={sortKey}&sort[0][dir]={sortDirection}";
-            var httpResponse = await client.GetAsync($"http://www.schuebelsoftware.com/SSSCalCoreApi/api/event?{filterParams}", HttpCompletionOption.ResponseHeadersRead);
+            var httpResponse = await client.GetAsync($"http://api.schuebelsoftware.com/api/event?{filterParams}", HttpCompletionOption.ResponseHeadersRead);
 
             httpResponse.EnsureSuccessStatusCode(); // throws if not 200-299
 
