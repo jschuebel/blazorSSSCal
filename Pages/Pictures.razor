@@ -6,6 +6,7 @@
 
 @using System.IO;
 @using Newtonsoft.Json;
+@using System.Text.RegularExpressions;
 
 <h1>Weather forecast</h1>
 
@@ -283,8 +284,8 @@
     {
         //Console.WriteLine($"ChangeMovie path({Path})");
 
-        var hldpath = Path.Replace("f:/inetpub/", "http://www.schuebelsoftware.com/");
-        //Console.WriteLine($"ChangeMovie updated hldpath({hldpath})");
+        var hldpath = Regex.Replace(Path, ".:/inetpub/", "http://www.schuebelsoftware.com/");
+        Console.WriteLine($"ChangeMovie updated hldpath({hldpath})");
         await JSRuntime.InvokeVoidAsync("playmovie", videoplayer, hldpath);
 
 
