@@ -11,7 +11,7 @@
 <h1>Weather forecast</h1>
 
 <div>
-    <center><button className="btn btn-primary" disabled="@BackButtonDeActived" @onclick="@(e=> BackLoadit(e))">@BackButtonText</button></center>
+    <center><button class="btn btn-primary" disabled="@BackButtonDeActived" @onclick="@(e=> BackLoadit(e))">@BackButtonText</button></center>
 
     <div id='picCont'>@messages</div>
     <center v-if="ShowDir" id="cDir"><h2>Directories</h2></center>

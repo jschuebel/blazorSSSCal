@@ -32,14 +32,18 @@ namespace SSSCalBlazor.Client.Components
         public List<PeopleModel> peopleData = new List<PeopleModel>();
         public int selectedID { get; set; }
         public int currentPage = 1, TotalRows = 0, pageSize = 10;
-        protected string sortKey = "name", sortDirection ="asc";
+        protected string sortKey = "name", activeKey = "name", sortDirection ="asc";
         bool isOpened = false;
         PeopleModel selectedPerson = new PeopleModel();
+        
 
+        protected async Task Search(string searchString=null) {
+            //https://www.schuebelsoftware.com/SSSCalWebAPI/api/person?page=1&pageSize=10&sort[0][field]=name&sort[0][dir]=asc&filter[logic]=and&filter[filters][0][field]=name&%20filter[filters][0][operator]=contains&filter[filters][0][value]=am
+            var filterParams = new System.Text.StringBuilder($"page={currentPage}&pageSize={pageSize}&sort[0][field]={sortKey}&sort[0][dir]={sortDirection}");
+            if (!string.IsNullOrEmpty(searchString))
+                filterParams.Append(searchString);
 
-        protected async Task Search() {
-            var filterParams = $"page={currentPage}&pageSize={pageSize}&sort[0][field]={sortKey}&sort[0][dir]={sortDirection}";
-//            peopleData = await client.GetFromJsonAsync<List<PeopleModel>>($"http://www.schuebelsoftware.com/SSSCalCoreApi/api/person?{filterParams}");
+            //            peopleData = await client.GetFromJsonAsync<List<PeopleModel>>($"http://www.schuebelsoftware.com/SSSCalCoreApi/api/person?{filterParams}");
             //var httpResponse = await client.GetAsync($"http://api.schuebelsoftware.com/api/person?{filterParams}", HttpCompletionOption.ResponseHeadersRead);
             //Azure requires SSL
             var httpResponse = await client.GetAsync($"https://www.schuebelsoftware.com/SSSCalWebAPI/api/person?{filterParams}", HttpCompletionOption.ResponseHeadersRead);
@@ -80,7 +84,44 @@ namespace SSSCalBlazor.Client.Components
 
         }
 
-        
+        async Task Filter(Tuple<string, string, string> searchv)
+        {
+            //ColumnName, ColumnType, _searchString
+            Console.WriteLine($" column({searchv.Item1})  columnType({searchv.Item2}) searchString({searchv.Item3})");
+            //https://www.schuebelsoftware.com/SSSCalWebAPI/api/person?page=1&pageSize=10&sort[0][field]=name&sort[0][dir]=asc&filter[logic]=and&filter[filters][0][field]=homePhone&filter[filters][0][operator]=contains&filter[filters][0][value]=678
+            string srch =null;
+            if (!string.IsNullOrEmpty(searchv.Item3))
+            {
+                if (searchv.Item2 == "string")
+                    srch = $"&filter[logic]=and&filter[filters][0][field]={searchv.Item1}&filter[filters][0][operator]=contains&filter[filters][0][value]={searchv.Item3}";
+                if (searchv.Item2 == "date")
+                {
+                    srch = $"&filter[logic]=and&filter[filters][0][field]={searchv.Item1}&filter[filters][0][operator]=gte&filter[filters][0][value]={searchv.Item3}";
+                    // &filter[filters][1][field]=Date&filter[filters][1][operator]=lte&filter[filters][1][value]=Mon+Apr+30+2018+00%3A00%3A00+GMT-0500+(Central+Daylight+Time)&_=1562110553341";
+                }
+                if (searchv.Item2 == "int")
+                    srch = $"&filter[logic]=and&filter[filters][0][field]={searchv.Item1}&filter[filters][0][operator]=eq&filter[filters][0][value]={searchv.Item3}";
+            }
+            await Search(srch);
+        }
+
+        async Task Sort(string fldName)
+        {
+            if (sortKey == fldName) {
+                if (sortDirection == "asc")
+                    sortDirection = "desc";
+                else sortDirection = "asc";
+            }
+            else
+            {
+                sortKey = fldName;
+                sortDirection = "asc";
+            }
+            Console.WriteLine($"fldname({fldName}) sortdir({sortDirection})");
+            await Search();
+        }
+
+
         void SaveModal()
         {
             isOpened = false;

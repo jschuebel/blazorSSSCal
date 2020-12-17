@@ -7,17 +7,24 @@
 }
 else
 {
-
-    <table class="table table-responsive table-striped table-hover table-condensed">
-        <thead>
+    <BlazorGrid TotalRows="@TotalRows" pageSize="@pageSize" OnClick="PagingHandler">
+        <ModalHeader>
             <tr>
-                <th class="smallSCR medSCR">id</th>
-                <th>Name</th>
-                <th class="smallSCR">DOB</th>
-                <th>Home Phone</th>
+                <th class="smallSCR medSCR">
+                    <MenuHeader ColumnName="Id" ColumnType="int" SelectedColumn="@sortKey" SortDir="@sortDirection" Sort="Sort" Filter="Filter">ID</MenuHeader>
+                </th>
+                <th>
+                   <MenuHeader ColumnName="Name" SelectedColumn="@sortKey" SortDir="@sortDirection" Sort="Sort" Filter="Filter" >Name</MenuHeader>
+                </th>
+                <th class="smallSCR">
+                    <MenuHeader ColumnName="DateOfBirth" ColumnType="date" SelectedColumn="@sortKey" SortDir="@sortDirection" Sort="Sort" Filter="Filter" >DOB</MenuHeader>
+                </th>
+                <th>
+                    <MenuHeader ColumnName="HomePhone" SelectedColumn="@sortKey" SortDir="@sortDirection" Sort="Sort" Filter="Filter" >Home Phone</MenuHeader>
+                </th>
             </tr>
-        </thead>
-        <tbody>
+        </ModalHeader>
+        <ModalBody>
             @foreach (var g in peopleData)
             {
                 <tr @onclick="@(e => ShowPop(e, g))">
@@ -27,16 +34,8 @@ else
                     <td>@g.homePhone</td>
                 </tr>
             }
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="4">
-                    <Pagination TotalRecords="@TotalRows" PageSize="@pageSize" OnClick="PagingHandler"></Pagination>
-                </td>
-            </tr>
-        </tfoot>
-    </table>
-
+        </ModalBody>
+    </BlazorGrid>
 
         <BlazorModal Title="Update Person" IsOpened="isOpened">
             <ModalBody>
