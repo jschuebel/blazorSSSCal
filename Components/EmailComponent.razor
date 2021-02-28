@@ -91,16 +91,24 @@
 
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine($"DateTime.Now.Month = {DateTime.Now.Month} ");
 
-        DateTime startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month - 1, 1);
-        //Console.WriteLine($"startDate = {startDate} ");
+        DateTime startDate = DateTime.Now;
+        if ((DateTime.Now.Month - 1) == 0)
+            startDate = new DateTime(DateTime.Now.Year, 1, 1);
+        else
+            startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month - 1, 1);
+        Console.WriteLine($"startDate = {startDate} ");
         DateTime endDate = new DateTime(DateTime.Now.Year, 12, 31);
 
-        eventData = await Http.GetFromJsonAsync<List<EventModel>>($"http://api.schuebelsoftware.com/api/event/calendarsearch?startDate={startDate.ToShortDateString()}&endDate={endDate.ToShortDateString()}");
+        //eventData = await Http.GetFromJsonAsync<List<EventModel>>($"http://api.schuebelsoftware.com/api/event/calendarsearch?startDate={startDate.ToShortDateString()}&endDate={endDate.ToShortDateString()}");
+        eventData = await Http.GetFromJsonAsync<List<EventModel>>($"https://www.schuebelsoftware.com/SSSCalWebAPI/api/event/calendarsearch?startDate={startDate.ToShortDateString()}&endDate={endDate.ToShortDateString()}");
         eventData.Insert(0, new EventModel() { id = -1, description = "@fmt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&gt;&gt;&nbsp;Make Selection&nbsp;&lt;&lt;" }) ;
 
         var filterParams = $"page=1&pageSize={int.MaxValue}&sort[0][field]=name&sort[0][dir]=asc";
-        PeopleList = await Http.GetFromJsonAsync<List<PeopleModel>>($"http://api.schuebelsoftware.com/api/person?{filterParams}");
+        //PeopleList = await Http.GetFromJsonAsync<List<PeopleModel>>($"http://api.schuebelsoftware.com/api/person?{filterParams}");
+        PeopleList = await Http.GetFromJsonAsync<List<PeopleModel>>($"https://www.schuebelsoftware.com/SSSCalWebAPI/api/person?{filterParams}");
+
 
 
 
@@ -126,7 +134,8 @@
         this.SelectedEmailIDList.Clear();
         Console.WriteLine("onChange selectedEventID=" + e.Value.ToString());
         selectedEventID = int.Parse(e.Value.ToString());
-        var SelectedGroupList = await Http.GetFromJsonAsync<List<GroupModel>>($"http://api.schuebelsoftware.com/api/group/{selectedEventID}");
+//        var SelectedGroupList = await Http.GetFromJsonAsync<List<GroupModel>>($"http://api.schuebelsoftware.com/api/group/{selectedEventID}");
+        var SelectedGroupList = await Http.GetFromJsonAsync<List<GroupModel>>($"https://www.schuebelsoftware.com/SSSCalWebAPI/api/group/{selectedEventID}");
         SelectedGroupList.ForEach(delegate (GroupModel g)
         {
             //Console.WriteLine($"peoplelist person name={g.personId}");

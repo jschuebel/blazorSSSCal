@@ -9,6 +9,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Blazored.LocalStorage;
 
+using SSSCalBlazor.Client.Models;
+using Fluxor;
+using System.Reflection;
+
 namespace SSSCalBlazor.Client
 {
     public class Program
@@ -18,9 +22,16 @@ namespace SSSCalBlazor.Client
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
             builder.Services.AddBlazoredLocalStorage();
+            //builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            builder.Services.AddMYServices(builder.HostEnvironment.BaseAddress);
 
-            builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-            
+            // Add Fluxor
+            builder.Services.AddFluxor(options =>
+            {
+                options.ScanAssemblies(Assembly.GetExecutingAssembly());
+//                options.UseReduxDevTools();
+            });
+
             await builder.Build().RunAsync();
         }
     }

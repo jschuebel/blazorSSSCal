@@ -33,6 +33,8 @@ namespace SSSCalBlazor.Client.Models
                 if (description == null || (description != null && description.Trim().Length == 0))
                 {
                     newstring = this.topic == null ? "N/A" : userName + " " + this.topic.Trim();
+                    if (newstring.Trim().Length > 25)
+                        newstring = newstring.Substring(0, 25).Trim();
                     len = newstring.Length;
                 }
                 else

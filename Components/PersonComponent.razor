@@ -1,4 +1,8 @@
 @page "/person"
+@inherits Fluxor.Blazor.Web.Components.FluxorComponent
+
+
+
 <h1>Manage People</h1>
 
 @if (peopleData == null)
@@ -7,6 +11,8 @@
 }
 else
 {
+
+    <h1>Sel Name: @pState.Value.peopleModel.name</h1>
     <BlazorGrid TotalRows="@TotalRows" pageSize="@pageSize" OnClick="PagingHandler">
         <ModalHeader>
             <tr>
@@ -14,13 +20,13 @@ else
                     <MenuHeader ColumnName="Id" ColumnType="int" SelectedColumn="@sortKey" SortDir="@sortDirection" Sort="Sort" Filter="Filter">ID</MenuHeader>
                 </th>
                 <th>
-                   <MenuHeader ColumnName="Name" SelectedColumn="@sortKey" SortDir="@sortDirection" Sort="Sort" Filter="Filter" >Name</MenuHeader>
+                    <MenuHeader ColumnName="Name" SelectedColumn="@sortKey" SortDir="@sortDirection" Sort="Sort" Filter="Filter">Name</MenuHeader>
                 </th>
                 <th class="smallSCR">
-                    <MenuHeader ColumnName="DateOfBirth" ColumnType="date" SelectedColumn="@sortKey" SortDir="@sortDirection" Sort="Sort" Filter="Filter" >DOB</MenuHeader>
+                    <MenuHeader ColumnName="DateOfBirth" ColumnType="date" SelectedColumn="@sortKey" SortDir="@sortDirection" Sort="Sort" Filter="Filter">DOB</MenuHeader>
                 </th>
                 <th>
-                    <MenuHeader ColumnName="HomePhone" SelectedColumn="@sortKey" SortDir="@sortDirection" Sort="Sort" Filter="Filter" >Home Phone</MenuHeader>
+                    <MenuHeader ColumnName="HomePhone" SelectedColumn="@sortKey" SortDir="@sortDirection" Sort="Sort" Filter="Filter">Home Phone</MenuHeader>
                 </th>
             </tr>
         </ModalHeader>
@@ -37,50 +43,50 @@ else
         </ModalBody>
     </BlazorGrid>
 
-        <BlazorModal Title="Update Person" IsOpened="isOpened">
-            <ModalBody>
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-4">
-                            <label class="label2">Name</label>
-                        </div>
-                        <div class="col-xs-6 col-lg-8">
-                            <input class="form-control" type="text" name="Name" id="Name" @bind="selectedPerson.name" />
-                        </div>
-                        <input type="hidden" id="id" name="id" />
-                        <input type="hidden" id="Address_ID" name="Address_ID" />
+    <BlazorModal Title="Update Person" IsOpened="isOpened">
+        <ModalBody>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xs-6 col-sm-4">
+                        <label class="label2">Name</label>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-4">
-                            <label class="label2">Home_Phone</label>
-                        </div>
-                        <div class="col-xs-6 col-lg-8">
-                            <input class="form-control" type="text" name="Home_Phone" id="Home_Phone" @bind="selectedPerson.homePhone" />
-                        </div>
+                    <div class="col-xs-6 col-lg-8">
+                        <input class="form-control" type="text" name="Name" id="Name" @bind="selectedPerson.name" />
                     </div>
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-4">
-                            <label class="label2">Email Adress</label>
-                        </div>
-                        <div class="col-xs-6 col-lg-8">
-                            <input class="form-control" type="text" name="E_Mail" @bind="selectedPerson.eMail" />
-                        </div>
+                    <input type="hidden" id="id" name="id" />
+                    <input type="hidden" id="Address_ID" name="Address_ID" />
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-4">
+                        <label class="label2">Home_Phone</label>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-6 col-sm-4">
-                            <label class="label2">Date of Birth</label>
-                        </div>
-                        <div class="col-xs-6 col-lg-8">
-                            <input class="form-control" type="date" @bind="selectedPerson.dateOfBirth" />
-                        </div>
+                    <div class="col-xs-6 col-lg-8">
+                        <input class="form-control" type="text" name="Home_Phone" id="Home_Phone" @bind="selectedPerson.homePhone" />
                     </div>
-
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-4">
+                        <label class="label2">Email Adress</label>
+                    </div>
+                    <div class="col-xs-6 col-lg-8">
+                        <input class="form-control" type="text" name="E_Mail" @bind="selectedPerson.eMail" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6 col-sm-4">
+                        <label class="label2">Date of Birth</label>
+                    </div>
+                    <div class="col-xs-6 col-lg-8">
+                        <input class="form-control" type="date" @bind="selectedPerson.dateOfBirth" />
+                    </div>
                 </div>
 
-            </ModalBody>
-            <ModalFooter>
-                <button class="btn btn-primary" @onclick="CloseModal">Close</button>
-                <button class="btn btn-primary" @onclick="SaveModal">Save</button>
-            </ModalFooter>
-        </BlazorModal>
+            </div>
+
+        </ModalBody>
+        <ModalFooter>
+            <button class="btn btn-primary" @onclick="CloseModal">Close</button>
+            <button class="btn btn-primary" @onclick="SaveModal">Save</button>
+        </ModalFooter>
+    </BlazorModal>
 }

@@ -2,30 +2,39 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 
-using System.Net.Http;
-using System.Net.Http.Json;
+//using System.Net.Http;
+//using System.Net.Http.Json;
 using System;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
-using System.IO;
+//using System.IO;
 using System.Linq;
 
-using Newtonsoft.Json;
+//using Newtonsoft.Json;
 using SSSCalBlazor.Client.Models;
-
+using SSSCalBlazor.Client.Store;
+using Fluxor;
 
 namespace SSSCalBlazor.Client.Components
 {
-    public partial class PersonComponent : ComponentBase
+    public partial class PersonComponent : Fluxor.Blazor.Web.Components.FluxorComponent //ComponentBase
     {
+        //[Inject]
+        //public HttpClient client { get; set; }
+
         [Inject]
-        public HttpClient client { get; set; }
+        public SSSCalBlazor.Client.Models.IPersonService svc { get; set; }
+
 
         [Inject]
         public IJSRuntime jsRuntime { get; set; }
 
+        [Inject]
+        public IState<PersonState> pState { get; set; }
 
- 
+        [Inject]
+        public IDispatcher dispatch {get;set;}
+        
 
 
         public string selectedCountryID { get; set; }
@@ -35,9 +44,14 @@ namespace SSSCalBlazor.Client.Components
         protected string sortKey = "name", activeKey = "name", sortDirection ="asc";
         bool isOpened = false;
         PeopleModel selectedPerson = new PeopleModel();
-        
+
 
         protected async Task Search(string searchString=null) {
+
+            var retv = await svc.GetPeople(currentPage, pageSize, sortKey, sortDirection, searchString);
+            peopleData = retv.Item2;
+            TotalRows = retv.Item1;
+            /*  ==========>REAL 
             //https://www.schuebelsoftware.com/SSSCalWebAPI/api/person?page=1&pageSize=10&sort[0][field]=name&sort[0][dir]=asc&filter[logic]=and&filter[filters][0][field]=name&%20filter[filters][0][operator]=contains&filter[filters][0][value]=am
             var filterParams = new System.Text.StringBuilder($"page={currentPage}&pageSize={pageSize}&sort[0][field]={sortKey}&sort[0][dir]={sortDirection}");
             if (!string.IsNullOrEmpty(searchString))
@@ -46,7 +60,9 @@ namespace SSSCalBlazor.Client.Components
             //            peopleData = await client.GetFromJsonAsync<List<PeopleModel>>($"http://www.schuebelsoftware.com/SSSCalCoreApi/api/person?{filterParams}");
             //var httpResponse = await client.GetAsync($"http://api.schuebelsoftware.com/api/person?{filterParams}", HttpCompletionOption.ResponseHeadersRead);
             //Azure requires SSL
-            var httpResponse = await client.GetAsync($"https://www.schuebelsoftware.com/SSSCalWebAPI/api/person?{filterParams}", HttpCompletionOption.ResponseHeadersRead);
+
+
+             var httpResponse = await client.GetAsync($"https://www.schuebelsoftware.com/SSSCalWebAPI/api/person?{filterParams}", HttpCompletionOption.ResponseHeadersRead);
 
             //client.DefaultRequestHeaders.Authorization=new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", savedToken);
             httpResponse.EnsureSuccessStatusCode(); // throws if not 200-299
@@ -63,10 +79,12 @@ namespace SSSCalBlazor.Client.Components
                 var streamReader = new StreamReader(contentStream);
                 peopleData = JsonConvert.DeserializeObject<List<PeopleModel>>(streamReader.ReadToEnd());
             }
+            */
         }
 
         protected override async Task OnInitializedAsync()
         {
+
             await Search();
         }
 
@@ -79,6 +97,9 @@ namespace SSSCalBlazor.Client.Components
 
         protected void ShowPop(MouseEventArgs e, PeopleModel p)
         {
+            dispatch.Dispatch(new AddPerson(p));
+            return;
+
             selectedPerson = p;
             isOpened = true;
 
@@ -107,6 +128,7 @@ namespace SSSCalBlazor.Client.Components
 
         async Task Sort(string fldName)
         {
+
             if (sortKey == fldName) {
                 if (sortDirection == "asc")
                     sortDirection = "desc";
