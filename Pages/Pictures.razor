@@ -151,7 +151,7 @@
             {
                 datacell.Value.id = j++;
                 if (datacell.Value.Path.IndexOf("SSSWebAPI") == -1)
-                    datacell.Value.Path = $"http://www.schuebelsoftware.com/SSSWebAPI/api/Image?Height=180&Width=180&FilePath={datacell.Value.Path}";
+                    datacell.Value.Path = $"https://www.schuebelsoftware.com/SSSWebAPI/api/Image?Height=180&Width=180&FilePath={datacell.Value.Path}";
                 displaypictures.Add(datacell.Value); //this.buildPicLink(i, key, datacell));
             }
         }
@@ -284,7 +284,7 @@
     {
         //Console.WriteLine($"ChangeMovie path({Path})");
 
-        var hldpath = Regex.Replace(Path, ".:/inetpub/", "http://www.schuebelsoftware.com/");
+        var hldpath = Regex.Replace(Path, ".:/inetpub/", "https://www.schuebelsoftware.com/");
         Console.WriteLine($"ChangeMovie updated hldpath({hldpath})");
         await JSRuntime.InvokeVoidAsync("playmovie", videoplayer, hldpath);
 
