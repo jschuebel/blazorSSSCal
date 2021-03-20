@@ -13,7 +13,7 @@ namespace SSSCalBlazor.Client.Models
     {
         public static IServiceCollection AddMYServices(this IServiceCollection services, string baseadd)
         {
-            services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(baseadd) });
+            services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(baseadd) });
             services.AddScoped<IPersonService, PersonService>();
 
             return services;
