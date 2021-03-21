@@ -88,6 +88,75 @@
         messages = "loading...";
     }
 
+
+    protected async Task AddFolders(Dictionary<string, PictureNode> folders, int MaxRows)
+    {
+        var celPos = 0;
+        for (var x = 0; x < MaxRows; x++)
+        {
+            for (var y = 0; y < this.MaxCols; y++)
+            {
+                celPos = x + (y * MaxRows);
+
+                if (celPos > folders.Count)
+                {
+                    //this.folders.push(this.buildDirLink(celPos,1, ''));
+                    Console.WriteLine($"************ OUT OF BOUND Celpos > folder count ({celPos})");
+                    continue;
+                }
+
+                //currentNode.folders.Count
+
+                var datacell = folders.ElementAt(celPos);
+                //if (datacell != null)
+                {
+                    if (datacell.Value.CellType == "Folder")
+                    {
+                        datacell.Value.id = (x * this.MaxCols) + y;
+                        //Console.WriteLine($"datacell id({datacell.Value.id} name({datacell.Value.Name}))");
+                        displayfolders.Add(datacell.Value); //this.buildDirLink(celPos,0, foldersOnly[celPos].Name));
+                    }
+                }
+            }
+        }
+        //Console.WriteLine($"displayfolders count({displayfolders.Count})");
+
+    }
+
+    protected async Task AddPictures(Dictionary<string, PictureNode> folders)
+    {
+        int j = 0;
+        foreach (var datacell in folders)
+        {
+            if (datacell.Value.CellType == "File" && datacell.Value.FileType == "Image")
+            {
+                datacell.Value.id = j++;
+                if (datacell.Value.Path.IndexOf("SSSWebAPI") == -1)
+                    datacell.Value.Path = $"https://www.schuebelsoftware.com/SSSWebAPI/api/Image?Height=180&Width=180&FilePath={datacell.Value.Path}";
+                displaypictures.Add(datacell.Value); //this.buildPicLink(i, key, datacell));
+            }
+        }
+        //Console.WriteLine($"displaypictures count({displaypictures.Count})");
+
+    }
+
+    protected async Task AddMovies(Dictionary<string, PictureNode> folders)
+    {
+        int j = 0;
+        foreach (var datacell in folders)
+        {
+            if (datacell.Value.CellType == "File" && datacell.Value.FileType == "Movie")
+            {
+                {
+                    datacell.Value.id = j++;
+                    movies.Add(datacell.Value); //this.buildPicLink(i, key, datacell));
+                }
+            }
+        }
+        //Console.WriteLine($"displaymovies count({movies.Count})");
+
+    }
+
     protected async Task UpdateTable(PictureNode currentNode)
     {
         if (currentNode.folders == null) return;
@@ -110,65 +179,11 @@
         displayfolders.Clear();
         displaypictures.Clear();
         movies.Clear();
-        //KeyValuePair<string, PictureNode> datacell;
 
-        var celPos = 0;
-        for (var x = 0; x < MaxRows; x++)
-        {
-            for (var y = 0; y < this.MaxCols; y++)
-            {
-                celPos = x + (y * MaxRows);
+        AddFolders(currentNode.folders, MaxRows);
+        AddPictures(currentNode.folders);
+        AddMovies(currentNode.folders);
 
-                if (celPos > currentNode.folders.Count)
-                {
-                    //this.folders.push(this.buildDirLink(celPos,1, ''));
-                    Console.WriteLine($"************ OUT OF BOUND Celpos > folder count ({celPos})");
-                    continue;
-                }
-
-                //currentNode.folders.Count
-
-                var datacell = currentNode.folders.ElementAt(celPos);
-                //if (datacell != null)
-                {
-                    if (datacell.Value.CellType == "Folder")
-                    {
-                        datacell.Value.id = (x * this.MaxCols) + y;
-                        //Console.WriteLine($"datacell id({datacell.Value.id} name({datacell.Value.Name}))");
-                        displayfolders.Add(datacell.Value); //this.buildDirLink(celPos,0, foldersOnly[celPos].Name));
-                    }
-                }
-            }
-        }
-        //Console.WriteLine($"displayfolders count({displayfolders.Count})");
-
-
-
-        int j = 0;
-        foreach (var datacell in currentNode.folders)
-        {
-            if (datacell.Value.CellType == "File" && datacell.Value.FileType == "Image")
-            {
-                datacell.Value.id = j++;
-                if (datacell.Value.Path.IndexOf("SSSWebAPI") == -1)
-                    datacell.Value.Path = $"https://www.schuebelsoftware.com/SSSWebAPI/api/Image?Height=180&Width=180&FilePath={datacell.Value.Path}";
-                displaypictures.Add(datacell.Value); //this.buildPicLink(i, key, datacell));
-            }
-        }
-        //Console.WriteLine($"displaypictures count({displaypictures.Count})");
-
-        j = 0;
-        foreach (var datacell in currentNode.folders)
-        {
-            if (datacell.Value.CellType == "File" && datacell.Value.FileType == "Movie")
-            {
-                {
-                    datacell.Value.id = j++;
-                    movies.Add(datacell.Value); //this.buildPicLink(i, key, datacell));
-                }
-            }
-        }
-        //Console.WriteLine($"displaymovies count({movies.Count})");
     }
 
 
@@ -181,17 +196,20 @@
             try
             {
 
-                int wd = await JSRuntime.InvokeAsync<int>("getFolderWidth", tFolder);
+                int wd = await JSRuntime.InvokeAsync<int>
+                    ("getFolderWidth", tFolder);
                 //Console.WriteLine($"wd={wd}");
 
                 MaxCols = (int)wd / 195;
                 // Console.WriteLine($"MaxCols={MaxCols}");
 
-                pictures = await localStorage.GetItemAsync<PictureNode>("SSSPics");
+                pictures = await localStorage.GetItemAsync<PictureNode>
+                    ("SSSPics");
                 if (pictures == null)
                 {
                     Console.WriteLine("SSSPics loaded from disk");
-                    pictures = await Http.GetFromJsonAsync<PictureNode>("inetpub.json");
+                    pictures = await Http.GetFromJsonAsync<PictureNode>
+                        ("inetpub.json");
                     if (pictures is null)
                         Console.WriteLine("NOOO pictures.Family");
 
@@ -294,4 +312,4 @@
     }
 
 
-}
+                }
