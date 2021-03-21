@@ -17,7 +17,7 @@ using Fluxor;
 
 namespace SSSCalBlazor.Client.Components
 {
-    public partial class PersonComponent : Fluxor.Blazor.Web.Components.FluxorComponent //ComponentBase
+    public partial class PersonComponent : ComponentBase //Fluxor.Blazor.Web.Components.FluxorComponent
     {
         //[Inject]
         //public HttpClient client { get; set; }
@@ -29,12 +29,17 @@ namespace SSSCalBlazor.Client.Components
         [Inject]
         public IJSRuntime jsRuntime { get; set; }
 
+/*Fluxor state changes
+        @inherits Fluxor.Blazor.Web.Components.FluxorComponent
+<h1>Sel Name: @pState.Value.peopleModel.name</h1>
+
+
         [Inject]
         public IState<PersonState> pState { get; set; }
 
         [Inject]
         public IDispatcher dispatch {get;set;}
-        
+*/        
 
 
         public string selectedCountryID { get; set; }
@@ -97,9 +102,10 @@ namespace SSSCalBlazor.Client.Components
 
         protected void ShowPop(MouseEventArgs e, PeopleModel p)
         {
+/*Fluxor state changes
             dispatch.Dispatch(new AddPerson(p));
             return;
-
+*/
             selectedPerson = p;
             isOpened = true;
 

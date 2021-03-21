@@ -1,6 +1,4 @@
 @page "/person"
-@inherits Fluxor.Blazor.Web.Components.FluxorComponent
-
 
 
 <h1>Manage People</h1>
@@ -12,7 +10,7 @@
 else
 {
 
-    <h1>Sel Name: @pState.Value.peopleModel.name</h1>
+    
     <BlazorGrid TotalRows="@TotalRows" pageSize="@pageSize" OnClick="PagingHandler">
         <ModalHeader>
             <tr>
